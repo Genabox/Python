@@ -89,3 +89,5 @@ if __name__ == "__main__":
     print(color_header + "=== Script ended ===" + Style.RESET_ALL)
 
 #========================= bot strartup file ============================#
+
+# if you want, say thanks ~ btc: 14CZG7Tp9vyHLxJoCi1FYKzgyjeG3BuPMe
