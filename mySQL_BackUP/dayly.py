@@ -19,50 +19,51 @@ backup_folder = 'H:\server\domains\localhost\embrezza\BackUp'
 files = os.listdir(backup_folder)
 
 def create_mysql_backup(db_config, backup_folder):
-    # Путь к mysqldump.exe
+    # Path to mysqldump.exe
     mysqldump_path = "H:\\server\\modules\\database\\MariaDB-10.8-Win10\\bin\\mysqldump.exe"
 
-
-    # Получение текущей даты
+    # Get the current date
     today = datetime.datetime.now().date()
 
-    # Функция для определения даты создания файла
+    # Function to determine the file's creation date
     def get_creation_date(file_name):
-        # Извлеките дату из имени файла (поиск по паттерну 'гггг-мм-дд')
+        # Extract the date from the file name (search for the pattern 'yyyy-mm-dd')
         date_pattern = re.search(r'\d{4}-\d{2}-\d{2}', file_name)
         if date_pattern:
             date_str = date_pattern.group()
             return datetime.datetime.strptime(date_str, '%Y-%m-%d')
         else:
-            return datetime.datetime.min  # Возвращаем минимальную дату, если дата не найдена
+            return datetime.datetime.min  # Return the minimum date if date is not found
 
-    # Получение списка файлов в папке бэкапов
+    # Get the list of files in the backup folder
     files = os.listdir(backup_folder)
 
-    # Найдите последний созданный файл и его дату создания
+    # Find the most recently created file and its creation date
     latest_backup = max(files, key=get_creation_date, default=None)
     latest_backup_date = get_creation_date(latest_backup) if latest_backup else None
 
-    # Проверьте, был ли последний бэкап создан сегодня
+    # Check if the latest backup was created today
     if latest_backup_date and latest_backup_date.date() == today:
-        print("Сегодня уже создан бэкап. Ничего не делаем.")
+        result = "A backup has already been created today. Doing nothing."
     else:
-        # Генерируйте новое имя для бэкапа
+        # Generate a new name for the backup
         new_backup_date_str = today.strftime('%Y-%m-%d')
         new_backup_name = f"embrezzaphpbb_{new_backup_date_str}.sql"
 
-        # Команда для создания бэкапа
+        # Command to create the backup
         backup_command = f"{mysqldump_path} -u{db_config['user']} -p{db_config['password']} " \
                         f"-h {db_config['host']} {db_config['database']} > " \
                         f"{os.path.join(backup_folder, new_backup_name)}"
 
-
         try:
-            # Выполнение команды для создания бэкапа
+            # Execute the command to create the backup
             subprocess.run(backup_command, shell=True, check=True)
-            print(f"Создан новый бэкап с именем: {new_backup_name}")
+            result = f"A new backup has been created with the name: {new_backup_name}"
         except subprocess.CalledProcessError as e:
-            print(f"Произошла ошибка при выполнении mysqldump: {e}")
+            result = f"An error occurred while executing mysqldump: {e}"
 
-# Вызов функции для создания бэкапа
+    print(result)
+    return result
+
+# Call the function to create a backup
 create_mysql_backup(db_config, backup_folder)
