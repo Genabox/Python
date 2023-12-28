@@ -5,7 +5,9 @@ import datetime
 import os
 import datetime
 import re
-# Замените этими данными вашу информацию о подключении к базе данных MySQL
+
+# Replace this data with your MySQL database connection information
+
 db_config = {
     'user': 'root',
     'password': 'dapass',
@@ -13,7 +15,7 @@ db_config = {
     'database': 'dbname',
 }
 
-# Замените этим путем куда будет сохранен SQL-файл резервной копии
+# Replace this path with the location where the SQL backup file will be saved
 backup_folder = 'H:\server\domains\localhost\embrezza\BackUp'
 
 files = os.listdir(backup_folder)
