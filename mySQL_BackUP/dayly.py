@@ -16,7 +16,7 @@ db_config = {
 }
 
 # Replace this path with the location where the SQL backup file will be saved
-backup_folder = 'H:\server\domains\localhost\embrezza\BackUp'
+backup_folder = 'H:\server\domains\localhost\BackUp'
 
 files = os.listdir(backup_folder)
 
