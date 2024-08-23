@@ -21,12 +21,14 @@ class PercentageCalculatorApp:
 
         self.entry = ttk.Entry(self.root, font=("Arial", 18))
         self.entry.pack(pady=10)
+        self.entry.insert(0, "10")  # Default value for Current price
         self.entry.bind('<KeyRelease>', self.dynamic_update)
 
         self.percentage_label = ttk.Label(self.root, text="Select percentage:")
         self.percentage_label.pack(pady=10)
 
         self.slider = ttk.Scale(self.root, from_=0.01, to=25, orient="horizontal", command=self.update_result)
+        self.slider.set(10)  # Default value set to 10%
         self.slider.pack(pady=10, fill='x', expand=True)
 
         # Adding scale markings below the slider
@@ -62,31 +64,41 @@ class PercentageCalculatorApp:
         self.footer_label = tk.Label(self.root, text="by Genabox https://github.com/genabox", font=("Arial", 8), anchor='e')
         self.footer_label.pack(side="bottom", anchor="se", padx=10, pady=5)
 
+        # Trigger initial update to display default values
+        self.update_result(10)
+
     def dynamic_update(self, event=None):
         self.update_result(self.slider.get())
 
     def update_result(self, value):
         try:
-            number = float(self.entry.get())
-            amount = float(self.amount_entry.get()) if self.amount_entry.get() else 1  # Default to 1 if empty
+            order_price = self.convert_to_float(self.entry.get())
+            amount = self.convert_to_float(self.amount_entry.get()) if self.amount_entry.get() else 1  # Default to 1 if empty
             percentage = float(value)
-            percentage_value = number * (percentage / 100)
-            current_price = number + percentage_value
-            income = current_price / amount if amount != 0 else 0
+            percentage_value = order_price * (percentage / 100)
+            current_price = order_price + percentage_value
+            income = (current_price - order_price) * amount
             self.result_label.config(text=f"Current price: {current_price:.2f} ({percentage:.2f}%)")
-            self.income_label.config(text=f"Income: {income:.2f}")
+            self.income_label.config(text=f"Income: {income:.4f}")
         except ValueError:
             self.result_label.config(text="Enter a valid number")
             self.income_label.config(text="Income: N/A")
 
     def update_slider(self, event=None):
         try:
-            max_percentage = float(self.max_percentage_entry.get())
+            max_percentage = self.convert_to_float(self.max_percentage_entry.get())
             self.slider.config(to=max_percentage)
             self.update_result(self.slider.get())  # Update result based on new max percentage
         except ValueError:
             self.result_label.config(text="Enter a valid percentage")
             self.income_label.config(text="Income: N/A")
+
+    def convert_to_float(self, value):
+        try:
+            # Replace commas with dots and convert to float
+            return float(value.replace(',', '.'))
+        except ValueError:
+            raise ValueError("Invalid input format")
 
 def create_image():
     width = 64
@@ -142,3 +154,4 @@ if __name__ == "__main__":
     tray_icon = create_tray_icon()
 
     root.mainloop()
+
